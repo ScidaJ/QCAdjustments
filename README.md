@@ -1,6 +1,6 @@
 # QCAdjustments
 
-I was getting a little annoyed at how grindy some of the quests in Tarkov were so decided to adjust the target amounts of some of them. This mod affects all quests with conditions of `CounterCreator`, `FindItem`, `HandoverItem`, `LeaveItemAtLocation`, and `SellItemToTrader`, as well as indcluding the ability to adjust the Gunsmith quest conditions. The lowest value that this mod will go is 1, so it will not remove quest conditions, simply make them easier(or harder) to complete.
+I was getting a little annoyed at how grindy some of the quests in Tarkov were so decided to adjust the target amounts of some of them. This mod affects all quests with conditions of `CounterCreator`, `FindItem`, `HandoverItem`, `LeaveItemAtLocation`, and `SellItemToTrader`, as well as including the ability to adjust the Gunsmith quest conditions. The lowest value that this mod will go is 1, so it will not remove quest conditions, simply make them easier(or harder) to complete.
 
 ## Installing
 
