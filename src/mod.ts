@@ -7,8 +7,8 @@ import { DatabaseService } from "@spt/services/DatabaseService";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
 
 import CONFIG from "../config/config.json";
-import GSQuests from "../data/Gunsmith_quests.json";
-import GSQuestsKills from "../data/Gunsmith_replace_conditions_quests.json"
+import GSQuestIds from "../data/Gunsmith_condition_ids.json"
+import { CreateGunsmithCondition } from "./utils/gunsmithQuestConditionFactory";
 
 enum ConditionType {
   Counter = "CounterCreator",
@@ -38,7 +38,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
       [ConditionType.LeaveAt]: (CONFIG.task_weight.leave_at > 0) ? CONFIG.task_weight.leave_at : this.DEFAULT_TASK_WEIGHT,
       [ConditionType.Sell]: (CONFIG.task_weight.sell > 0) ? CONFIG.task_weight.sell : this.DEFAULT_TASK_WEIGHT
     }
-    const replaceTask = CONFIG.gunsmith_kills?.enabled ?? false
+    const replaceTask = CONFIG.gunsmith_kills.replace_task ?? false;
 
     log("Adjusting quest conditions for kills, handover/FIR, leaveAt, and sell.");
     for (const quest of Object.values(quests)) {
@@ -48,23 +48,27 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     }
 
     if (CONFIG.gunsmith_kills.enabled) {
-      log("Adjusting coniditions for Gunsmith.")
-      const gunsmithQuests = (CONFIG.gunsmith_kills.replace_task) ? GSQuestsKills : GSQuests;
+      log("Adjusting Gunsmith conditions.");
       const gunsmithKillCount = (CONFIG.gunsmith_kills.kills > 0) ? CONFIG.gunsmith_kills.kills : this.DEFAULT_GUNSMITH_KILLS;
+      const gunsmithQuestIds = GSQuestIds;
 
-      for (const questId in gunsmithQuests) {
-        let quest = <IQuest>gunsmithQuests[questId]
-        for (const condition of Object.values(quest.conditions.AvailableForFinish)) {
-          if (condition.value) {
-            switch (condition.conditionType) {
-              case ConditionType.Counter:
-                condition.value = gunsmithKillCount;
-                break;
-            }
-          }
-
+      for (const questId in GSQuestIds) {
+        let quest = <IQuest>quests[questId]
+        let newConditions: IQuestCondition[] = [];
+        for (const [index, condition] of quest.conditions.AvailableForFinish.entries()) {
+          let target = (typeof condition.target === 'string') ? condition.target : condition.target[0];
+          newConditions.push(CreateGunsmithCondition(gunsmithQuestIds[quest._id][index], target, [], gunsmithKillCount))
         }
-        quests[questId] = quest;
+        if (replaceTask) {
+          quest.conditions.AvailableForFinish = newConditions;
+        } else {
+          quest.conditions.AvailableForFinish = [...quest.conditions.AvailableForFinish, ...newConditions];
+        }
+      }
+      if (replaceTask) {
+        log("Replaced Gunsmith conditions.")
+      } else {
+        log("Added Gunsmith conditions.")
       }
     }
 
