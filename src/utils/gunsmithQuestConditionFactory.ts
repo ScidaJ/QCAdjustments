@@ -1,7 +1,7 @@
 import { IQuestCondition } from "@spt/models/eft/common/tables/IQuest";
 import { GunsmithQuestCondition } from "./gunsmithQuestConditionTypes";
 
-export function CreateGunsmithCondition(conditionIds: GunsmithQuestCondition, weapon: string, weaponMods: string[][], kills: number): IQuestCondition {
+export function CreateGunsmithCondition(conditionIds: GunsmithQuestCondition, weapon: string, kills: number): IQuestCondition {
     return {
         id: conditionIds.id,
         conditionType: "CounterCreator",
@@ -15,8 +15,7 @@ export function CreateGunsmithCondition(conditionIds: GunsmithQuestCondition, we
                 resetOnSessionEnd: false,
                 target: "Any",
                 value: 1,
-                weapon: [weapon],
-                weaponModsInclusive: weaponMods
+                weapon: [weapon]
             }]
         },
         dynamicLocale: true,
