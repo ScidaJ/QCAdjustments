@@ -26,3 +26,16 @@ This section has to do with the Gunsmith quests, adjusting them to also require 
 `enabled` Default: false - Enables the gunsmith adjustments.  
 `replace_task` Default: false - Replaces the `handover` quest condition with kill counter.  
 `kills` Default: 10 - The number of kills the Gunsmith quest condition will have. Not affected by the above weights.  
+
+### Quest Blacklist(Optional)
+
+`quest_blacklist` Default: [] - A list of quest names to skip when making changes to the quest conditions.
+
+Example
+
+```json
+quest_blacklist: [
+    "Regulated Materials",
+    "Gunsmith - Part 3"
+]
+```

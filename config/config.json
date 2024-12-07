@@ -5,10 +5,10 @@
         "leave_at": 0.5,
         "sell": 0.5
     },
-    "quest_blacklist": [],
     "gunsmith_kills": {
         "enabled": false,
         "replace_task": false,
         "kills": 10
-    }
+    },
+    "quest_blacklist": []
 }
