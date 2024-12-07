@@ -35,6 +35,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     const weights = {
       [ConditionType.Counter]: (CONFIG.task_weight.counter > 0) ? CONFIG.task_weight.counter : this.DEFAULT_TASK_WEIGHT,
       [ConditionType.Handover]: (CONFIG.task_weight.find_handover > 0) ? CONFIG.task_weight.find_handover : this.DEFAULT_TASK_WEIGHT,
+      [ConditionType.Find]: (CONFIG.task_weight.find_handover > 0) ? CONFIG.task_weight.find_handover : this.DEFAULT_TASK_WEIGHT,
       [ConditionType.LeaveAt]: (CONFIG.task_weight.leave_at > 0) ? CONFIG.task_weight.leave_at : this.DEFAULT_TASK_WEIGHT,
       [ConditionType.Sell]: (CONFIG.task_weight.sell > 0) ? CONFIG.task_weight.sell : this.DEFAULT_TASK_WEIGHT
     }
