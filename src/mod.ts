@@ -40,9 +40,14 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
       [ConditionType.Sell]: (CONFIG.task_weight.sell > 0) ? CONFIG.task_weight.sell : this.DEFAULT_TASK_WEIGHT
     }
     const replaceTask = CONFIG.gunsmith_kills.replace_task ?? false;
+    const questBlacklist = CONFIG.quest_blacklist ?? [];
 
     log("Adjusting quest conditions for kills, handover/FIR, leaveAt, and sell.");
     for (const quest of Object.values(quests)) {
+      if (questBlacklist.includes(quest.QuestName)) {
+        log("Skipping " + quest.QuestName);
+        continue;
+      }
       for (const condition of Object.values<IQuestCondition>(quest.conditions.AvailableForFinish)) {
         this.adjustQuestCondition(condition, weights);
       }
@@ -55,6 +60,10 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
       for (const questId in GSConditionIds) {
         let quest = <IQuest>quests[questId];
         let newConditions: IQuestCondition[] = [];
+        if (questBlacklist.includes(quest.QuestName)) {
+          log("Skipping " + quest.QuestName);
+          continue;
+        }
         for (const [index, condition] of quest.conditions.AvailableForFinish.entries()) {
           let target = (typeof condition.target === 'string') ? condition.target : condition.target[0];
           newConditions.push(CreateGunsmithCondition(GSConditionIds[quest._id][index], target, gunsmithKillCount));
