@@ -34,7 +34,7 @@ This section has to do with the Gunsmith quests, adjusting them to also require 
 Example
 
 ```json
-quest_blacklist: [
+"quest_blacklist": [
     "Regulated Materials",
     "Gunsmith - Part 3"
 ]
