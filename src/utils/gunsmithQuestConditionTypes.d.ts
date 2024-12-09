@@ -1,13 +1,13 @@
 interface Condition {
-	id: string;
+  id: string;
 }
 
 interface Counter {
-	id: string;
-	conditions: Condition[]
+  id: string;
+  conditions: Condition[];
 }
 
 export interface GunsmithQuestCondition {
-	id: string;
-	counter: Counter
+  id: string;
+  counter: Counter;
 }

@@ -9,5 +9,6 @@
 *.txt
 *.exe
 
-# Exclude these files from linting
+# Exclude specific files from linting
+build.mjs
 eslint.config.js
