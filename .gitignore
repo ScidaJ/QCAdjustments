@@ -1,4 +1,8 @@
 .vscode/*
 node_modules/*
 dist/*
+<<<<<<< HEAD
 .eslintcache
+=======
+.eslintcache
+>>>>>>> 12eedbd (Think it's properly excluded now. A rebase may be needed.)
