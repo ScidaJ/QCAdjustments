@@ -11,78 +11,79 @@ import GSConditionIds from "../data/Gunsmith_condition_ids.json"
 import { CreateGunsmithCondition } from "./utils/gunsmithQuestConditionFactory";
 
 enum ConditionType {
-	Counter = "CounterCreator",
-	Find = "FindItem",
-	Handover = "HandoverItem",
-	LeaveAt = "LeaveItemAtLocation",
-	Sell = "SellItemToTrader",
+    Counter = "CounterCreator",
+    Find = "FindItem",
+    Handover = "HandoverItem",
+    LeaveAt = "LeaveItemAtLocation",
+    Sell = "SellItemToTrader",
 
 }
 class QuestConditionAdjuster implements IPostDBLoadMod {
-	private readonly DEFAULT_TASK_WEIGHT = 0.5;
-	private readonly DEFAULT_GUNSMITH_KILLS = 10;
+    private readonly DEFAULT_TASK_MULTIPLIER = 0.5;
+    private readonly DEFAULT_GUNSMITH_KILLS = 10;
 
-	public postDBLoad(container: DependencyContainer): void {
-		// Log init
-		const logger = container.resolve<ILogger>("WinstonLogger");
-		const log = (msg: string) => logger.info(`[QCAdjustments] ${msg}`);
+    public postDBLoad(container: DependencyContainer): void {
+        // Log init
+        const logger = container.resolve<ILogger>("WinstonLogger");
+        const log = (msg: string) => logger.info(`[QCAdjustments] ${msg}`);
 
-		// Db init
-		const databaseService = container.resolve<DatabaseService>("DatabaseService");
-		const quests = databaseService.getTables().templates.quests;
+        // Db init
+        const databaseService = container.resolve<DatabaseService>("DatabaseService");
+        const quests = databaseService.getTables().templates.quests;
 
-		// Config init
-		const weights = {
-			[ConditionType.Counter]: (CONFIG.task_weight.counter > 0) ? CONFIG.task_weight.counter : this.DEFAULT_TASK_WEIGHT,
-			[ConditionType.Find]: (CONFIG.task_weight.find_handover > 0) ? CONFIG.task_weight.find_handover : this.DEFAULT_TASK_WEIGHT,
-			[ConditionType.Handover]: (CONFIG.task_weight.find_handover > 0) ? CONFIG.task_weight.find_handover : this.DEFAULT_TASK_WEIGHT,
-			[ConditionType.LeaveAt]: (CONFIG.task_weight.leave_at > 0) ? CONFIG.task_weight.leave_at : this.DEFAULT_TASK_WEIGHT,
-			[ConditionType.Sell]: (CONFIG.task_weight.sell > 0) ? CONFIG.task_weight.sell : this.DEFAULT_TASK_WEIGHT
-		}
-		const replaceTask = CONFIG.gunsmith_kills.replace_task ?? false;
-		const questBlacklist = CONFIG.quest_blacklist ?? [];
+        // Config init
+        const multipliers = {
+            [ConditionType.Counter]: (CONFIG.task_multipliers.counter > 0) ? CONFIG.task_multipliers.counter : this.DEFAULT_TASK_MULTIPLIER,
+            [ConditionType.Find]: (CONFIG.task_multipliers.find_handover > 0) ? CONFIG.task_multipliers.find_handover : this.DEFAULT_TASK_MULTIPLIER,
+            [ConditionType.Handover]: (CONFIG.task_multipliers.find_handover > 0) ? CONFIG.task_multipliers.find_handover : this.DEFAULT_TASK_MULTIPLIER,
+            [ConditionType.LeaveAt]: (CONFIG.task_multipliers.leave_at > 0) ? CONFIG.task_multipliers.leave_at : this.DEFAULT_TASK_MULTIPLIER,
+            [ConditionType.Sell]: (CONFIG.task_multipliers.sell > 0) ? CONFIG.task_multipliers.sell : this.DEFAULT_TASK_MULTIPLIER
+        }
+        const gunsmithKillCount = (CONFIG.gunsmith_kills.kills > 0) ? CONFIG.gunsmith_kills.kills : this.DEFAULT_GUNSMITH_KILLS;
+        const replaceTask = CONFIG.gunsmith_kills.replace_task ?? false;
+        const questBlacklist = CONFIG.quest_blacklist ?? [];
 
-		log("Adjusting quest conditions for kills, handover/FIR, leaveAt, and sell.");
-		for (const quest of Object.values(quests)) {
-			if (questBlacklist.includes(quest.QuestName)) {
-				log("Skipping " + quest.QuestName);
-				continue;
-			}
-			for (const condition of Object.values<IQuestCondition>(quest.conditions.AvailableForFinish)) {
-				this.adjustQuestCondition(condition, weights);
-			}
-		}
+        // Quest condition loop
+        log("Adjusting quest conditions for kills, handover/FIR, leaveAt, and sell.");
+        for (const quest of Object.values(quests)) {
+            if (questBlacklist.includes(quest.QuestName)) {
+                log("Skipping " + quest.QuestName);
+                continue;
+            }
+            for (const condition of Object.values<IQuestCondition>(quest.conditions.AvailableForFinish)) {
+                this.adjustQuestCondition(condition, multipliers);
+            }
+        }
 
-		if (CONFIG.gunsmith_kills.enabled) {
-			log("Adjusting Gunsmith conditions.");
-			const gunsmithKillCount = (CONFIG.gunsmith_kills.kills > 0) ? CONFIG.gunsmith_kills.kills : this.DEFAULT_GUNSMITH_KILLS;
+        // Gunsmith changes
+        if (CONFIG.gunsmith_kills.enabled) {
+            log("Adjusting Gunsmith conditions.");
+            for (const questId in GSConditionIds) {
+                let quest = <IQuest>quests[questId];
+                let newConditions: IQuestCondition[] = [];
+                if (questBlacklist.includes(quest.QuestName)) {
+                    log("Skipping " + quest.QuestName);
+                    continue;
+                }
+                for (const [index, condition] of quest.conditions.AvailableForFinish.entries()) {
+                    let weapon = (typeof condition.target === 'string') ? condition.target : condition.target[0];
+                    newConditions.push(CreateGunsmithCondition(GSConditionIds[quest._id][index], weapon, gunsmithKillCount));
+                }
+                if (replaceTask)
+                    newConditions = [...quest.conditions.AvailableForFinish, ...newConditions];
+                quest.conditions.AvailableForFinish = newConditions;
+            }
+            log(`${(replaceTask) ? "Replaced" : "Added"} Gunsmith conditions.`);
+        }
+        log("Adjusted quest conditions.");
+    }
 
-			for (const questId in GSConditionIds) {
-				let quest = <IQuest>quests[questId];
-				let newConditions: IQuestCondition[] = [];
-				if (questBlacklist.includes(quest.QuestName)) {
-					log("Skipping " + quest.QuestName);
-					continue;
-				}
-				for (const [index, condition] of quest.conditions.AvailableForFinish.entries()) {
-					let target = (typeof condition.target === 'string') ? condition.target : condition.target[0];
-					newConditions.push(CreateGunsmithCondition(GSConditionIds[quest._id][index], target, gunsmithKillCount));
-				}
-				if (replaceTask)
-					newConditions = [...quest.conditions.AvailableForFinish, ...newConditions];
-				quest.conditions.AvailableForFinish = newConditions;
-			}
-			log(`${(replaceTask) ? "Replaced" : "Added"} Gunsmith conditions.`);
-		}
-		log("Adjusted quest conditions.");
-	}
-
-	private adjustQuestCondition(condition: IQuestCondition, weights: { [key in ConditionType]?: number }): void {
-		const weight = weights[condition.conditionType];
-		if (typeof condition.value === "number" && weight) {
-			condition.value = Math.ceil(condition.value * weight);
-		}
-	}
+    private adjustQuestCondition(condition: IQuestCondition, multipliers: { [key in ConditionType]?: number }): void {
+        const multiplier = multipliers[condition.conditionType];
+        if (typeof condition.value === "number" && multiplier) {
+            condition.value = Math.ceil(condition.value * multiplier);
+        }
+    }
 }
 
 export const mod = new QuestConditionAdjuster();

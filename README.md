@@ -10,7 +10,7 @@ Pick up the latest release and extract it into your SPT directory.
 
 A breakdown of the config values.
 
-### Task Weights
+### Task Multipliers
 
 This section adjusts the total amounts of the quest conditions. Most are self-explanatory but descriptions are left in for clarity. Lower is easier.
 
