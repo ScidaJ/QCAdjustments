@@ -3,7 +3,9 @@
     "version": "2.2.0",
     "sptVersion": "~3.10",
     "loadBefore": [],
-    "loadAfter": [],
+    "loadAfter": [
+        "Virtual's Custom Quest Loader"
+    ],
     "incompatibilities": [],
     "isBundleMod": false,
     "main": "src/mod.js",
