@@ -103,7 +103,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
             ),
           );
         }
-        if (replaceTask)
+        if (!replaceTask)
           newConditions = [
             ...quest.conditions.AvailableForFinish,
             ...newConditions,
