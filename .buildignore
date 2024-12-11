@@ -7,7 +7,7 @@
 /.github
 /.gitignore
 /.gitlab
-/husky
+/.husky
 /.nvmrc
 /.prettierrc
 /.prettierignore

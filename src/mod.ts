@@ -1,6 +1,6 @@
 import { DependencyContainer } from "tsyringe";
 
-import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
+import { IPostSptLoadMod } from "@spt/models/external/IPostSptLoadMod";
 import { IQuest } from "@spt/models/eft/common/tables/IQuest";
 import { IQuestCondition } from "@spt/models/eft/common/tables/IQuest";
 import { DatabaseService } from "@spt/services/DatabaseService";
@@ -17,11 +17,11 @@ enum ConditionType {
   LeaveAt = "LeaveItemAtLocation",
   Sell = "SellItemToTrader",
 }
-class QuestConditionAdjuster implements IPostDBLoadMod {
+class QuestConditionAdjuster implements IPostSptLoadMod {
   private readonly DEFAULT_TASK_MULTIPLIER = 0.5;
   private readonly DEFAULT_GUNSMITH_KILLS = 10;
 
-  public postDBLoad(container: DependencyContainer): void {
+  public postSptLoad(container: DependencyContainer): void {
     // Log init
     const logger = container.resolve<ILogger>("WinstonLogger");
     const log = (msg: string) => logger.info(`[QCAdjustments] ${msg}`);
