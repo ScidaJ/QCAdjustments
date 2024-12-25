@@ -17,7 +17,7 @@ This section adjusts the total amounts of the quest conditions. Most are self-ex
 `counter` Default: 0.5 - Any quest condition that count your progress towards something with an action(i.e. shot, shot on body location, kill at location, etc., etc.,).  
 `find_handover` Default: 0.5 - Any quest condition that involves finding items in raid and handing them over.  
 `leave_at` Default: 0.5 - Any quest condition that involves you "stashing" an item at a location.  
-`sell` Default: 0.5 - Any quest condition that involves you selling an item to a trader.
+`sell` Default: 0.5 - Any quest condition that involves you selling an item to a trader.  
 `timer` Default: 0.5 - Reduces the "stash" timer for `leave_at` quests.
 
 ### Gunsmith
