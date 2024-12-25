@@ -60,6 +60,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
         : this.DEFAULT_GUNSMITH_KILLS;
     const replaceTask = CONFIG.gunsmith_kills.replace_task ?? false;
     const questBlacklist = CONFIG.quest_blacklist ?? [];
+    const timer = CONFIG.task_multipliers.timer ?? 0.5;
 
     // Quest condition loop
     log(
@@ -74,6 +75,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
         quest.conditions.AvailableForFinish,
       )) {
         this.adjustQuestCondition(condition, multipliers);
+        this.adjustQuestPlacementTimer(condition, timer);
       }
     }
 
@@ -122,6 +124,15 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     const multiplier = multipliers[condition.conditionType];
     if (typeof condition.value === "number" && multiplier) {
       condition.value = Math.ceil(condition.value * multiplier);
+    }
+  }
+
+  private adjustQuestPlacementTimer(
+    condition: IQuestCondition,
+    multiplier: number,
+  ): void {
+    if (condition.plantTime && typeof condition.plantTime === "number") {
+      condition.plantTime = Math.ceil(condition.plantTime * multiplier);
     }
   }
 }

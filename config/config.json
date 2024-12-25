@@ -3,7 +3,8 @@
         "counter": 0.5,
         "find_handover": 0.5,
         "leave_at": 0.5,
-        "sell": 0.5
+        "sell": 0.5,
+        "timer": 0.5
     },
     "gunsmith_kills": {
         "enabled": false,
