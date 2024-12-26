@@ -19,6 +19,7 @@ This section adjusts the total amounts of the quest conditions. Most are self-ex
 `leave_at` Default: 0.5 - Any quest condition that involves you "stashing" an item at a location.  
 `sell` Default: 0.5 - Any quest condition that involves you selling an item to a trader.  
 `timer` Default: 0.5 - Reduces the "stash" timer for `leave_at` quests.
+`xp` Default: 1.0 - XP Reward multiplier from quests
 
 ### Gunsmith
 
