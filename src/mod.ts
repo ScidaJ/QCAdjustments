@@ -1,7 +1,7 @@
 import { DependencyContainer } from "tsyringe";
 
 import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
-import { IQuest } from "@spt/models/eft/common/tables/IQuest";
+import { IQuest, IQuestReward } from "@spt/models/eft/common/tables/IQuest";
 import { IQuestCondition } from "@spt/models/eft/common/tables/IQuest";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
@@ -9,6 +9,7 @@ import { ILogger } from "@spt/models/spt/utils/ILogger";
 import CONFIG from "../config/config.json";
 import GSConditionIds from "../data/Gunsmith_condition_ids.json";
 import { CreateGunsmithCondition } from "./utils/gunsmithQuestConditionFactory";
+import { QuestRewardType } from "@spt/models/enums/QuestRewardType";
 
 enum ConditionType {
   Counter = "CounterCreator",
@@ -61,6 +62,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     const replaceTask = CONFIG.gunsmith_kills.replace_task ?? false;
     const questBlacklist = CONFIG.quest_blacklist ?? [];
     const timer = CONFIG.task_multipliers.timer ?? 0.5;
+    const xpMultiplier = CONFIG.task_multipliers.xp ?? 1.0;
 
     // Quest condition loop
     log(
@@ -76,6 +78,10 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
       )) {
         this.adjustQuestCondition(condition, multipliers);
         this.adjustQuestPlacementTimer(condition, timer);
+      }
+
+      for (const reward of Object.values<IQuestReward>(quest.rewards.Success)) {
+        this.adjustQuestXPReward(reward, xpMultiplier);
       }
     }
 
@@ -133,6 +139,16 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
   ): void {
     if (condition.plantTime && typeof condition.plantTime === "number") {
       condition.plantTime = Math.ceil(condition.plantTime * multiplier);
+    }
+  }
+
+  private adjustQuestXPReward(reward: IQuestReward, multiplier: number): void {
+    if (
+      reward.type === QuestRewardType.EXPERIENCE &&
+      reward.value &&
+      typeof reward.value === "number"
+    ) {
+      reward.value = Math.ceil(reward.value * multiplier);
     }
   }
 }
