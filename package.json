@@ -1,7 +1,7 @@
 {
     "name": "QCAdjustments",
     "version": "2.3.0",
-    "sptVersion": "~3.10",
+    "sptVersion": "~3.11",
     "loadBefore": [],
     "loadAfter": [
         "Virtual's Custom Quest Loader"
