@@ -1,7 +1,8 @@
 import { DependencyContainer } from "tsyringe";
 
 import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
-import { IQuest, IQuestReward } from "@spt/models/eft/common/tables/IQuest";
+import { IQuest } from "@spt/models/eft/common/tables/IQuest";
+import { IReward } from "@spt/models/eft/common/tables/IReward";
 import { IQuestCondition } from "@spt/models/eft/common/tables/IQuest";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
@@ -9,7 +10,7 @@ import { ILogger } from "@spt/models/spt/utils/ILogger";
 import CONFIG from "../config/config.json";
 import GSConditionIds from "../data/Gunsmith_condition_ids.json";
 import { CreateGunsmithCondition } from "./utils/gunsmithQuestConditionFactory";
-import { QuestRewardType } from "@spt/models/enums/QuestRewardType";
+import { RewardType } from "@spt/models/enums/RewardType";
 
 enum ConditionType {
   Counter = "CounterCreator",
@@ -80,7 +81,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
         this.adjustQuestPlacementTimer(condition, timer);
       }
 
-      for (const reward of Object.values<IQuestReward>(quest.rewards.Success)) {
+      for (const reward of Object.values<IReward>(quest.rewards.Success)) {
         this.adjustQuestXPReward(reward, xpMultiplier);
       }
     }
@@ -142,9 +143,9 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     }
   }
 
-  private adjustQuestXPReward(reward: IQuestReward, multiplier: number): void {
+  private adjustQuestXPReward(reward: IReward, multiplier: number): void {
     if (
-      reward.type === QuestRewardType.EXPERIENCE &&
+      reward.type === RewardType.EXPERIENCE &&
       reward.value &&
       typeof reward.value === "number"
     ) {
