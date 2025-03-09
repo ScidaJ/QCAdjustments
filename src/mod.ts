@@ -1,7 +1,7 @@
 import { DependencyContainer } from "tsyringe";
 
 import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
-import { IQuest, IQuestRewards } from "@spt/models/eft/common/tables/IQuest";
+import { IQuest } from "@spt/models/eft/common/tables/IQuest";
 import { IReward } from "@spt/models/eft/common/tables/IReward";
 import { IQuestCondition } from "@spt/models/eft/common/tables/IQuest";
 import { DatabaseService } from "@spt/services/DatabaseService";
