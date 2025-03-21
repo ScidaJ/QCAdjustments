@@ -129,7 +129,11 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     multipliers: { [key in ConditionType]?: number },
   ): void {
     const multiplier = multipliers[condition.conditionType];
-    if (typeof condition.value === "number" && multiplier) {
+    if (
+      typeof condition.value === "number" &&
+      multiplier &&
+      condition.value !== 1
+    ) {
       condition.value = Math.ceil(condition.value * multiplier);
     }
   }
