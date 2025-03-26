@@ -347,5 +347,40 @@
                 ]
             }
         }
+    ],
+    "676529af9c90953d090882e7": [
+        {
+            "id": "67e3fe48cdc07470b520d2da",
+            "counter": {
+                "id": "67e3fe56d2934e0ede9644a3",
+                "conditions": [
+                    {
+                        "id": "67e3fe5d13242276bf916a2f"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "67e3fe6c65a9e5289df541a1",
+            "counter": {
+                "id": "67e3fe7faef36f956a63babe",
+                "conditions": [
+                    {
+                        "id": "67e3fe85bec5d5840676f5a6"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "67e3fe7af305e7f303957cf2",
+            "counter": {
+                "id": "67e3fe8a6000a9e5aa463935",
+                "conditions": [
+                    {
+                        "id": "67e3fe9006d8676c24947796"
+                    }
+                ]
+            }
+        }
     ]
 }
