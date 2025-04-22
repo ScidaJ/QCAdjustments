@@ -14,11 +14,11 @@ A breakdown of the config values.
 
 This section allows you to change the targets for kill quests. It will not target any quests involving Rogues, Raiders, or Scav Bosses. The default values will retain vanilla kill targets on quests. Note: This will **NOT** change the task text. If you change all Bear quests to Any, the task will still say Bear PMCs, but any kill will count. As an aside that has made testing this very difficult, so please let me know of any issues you find and I will do my best to solve them as quickly as possible.
 
-`any` Default: Any
-`any_pmc` Default: AnyPmc
-`bear` Default: Bear
-`scavs` Default: Savage
-`usec` Default: Usec
+`any` Default: Any  
+`any_pmc` Default: AnyPmc  
+`bear` Default: Bear  
+`scavs` Default: Savage  
+`usec` Default: Usec  
 
 ### Task Multipliers
 
