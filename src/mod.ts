@@ -7,21 +7,31 @@ import { IQuestCondition } from "@spt/models/eft/common/tables/IQuest";
 import { DatabaseService } from "@spt/services/DatabaseService";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
 
-import CONFIG from "../config/config.json";
+import config from "../config/config.json";
 import GSConditionIds from "../data/Gunsmith_condition_ids.json";
 import { CreateGunsmithCondition } from "./utils/gunsmithQuestConditionFactory";
 import { RewardType } from "@spt/models/enums/RewardType";
+import { log } from "winston";
 
 enum ConditionType {
-  Counter = "CounterCreator",
-  Find = "FindItem",
-  Handover = "HandoverItem",
-  LeaveAt = "LeaveItemAtLocation",
-  Sell = "SellItemToTrader",
+  COUNTER = "CounterCreator",
+  FIND = "FindItem",
+  HANDOVER = "HandoverItem",
+  LEAVEAT = "LeaveItemAtLocation",
+  SELL = "SellItemToTrader",
 }
+
+enum KillTargets {
+  ANY = "Any",
+  ANYPMC = "AnyPmc",
+  BEAR = "Bear",
+  SAVAGE = "Savage",
+  USEC = "Usec",
+}
+
 class QuestConditionAdjuster implements IPostDBLoadMod {
-  private readonly DEFAULT_TASK_MULTIPLIER = 0.5;
-  private readonly DEFAULT_GUNSMITH_KILLS = 10;
+  private readonly defaultTaskMultiplier = 0.5;
+  private readonly defaultGunsmithKills = 10;
 
   public postDBLoad(container: DependencyContainer): void {
     // Log init
@@ -34,36 +44,63 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     const quests = databaseService.getTables().templates.quests;
 
     // Config init
+    const targets = {
+      [KillTargets.ANY]: Object.values<string>(KillTargets).includes(
+        config.kill_targets.any,
+      )
+        ? config.kill_targets.any
+        : KillTargets.ANY,
+      [KillTargets.ANYPMC]: Object.values<string>(KillTargets).includes(
+        config.kill_targets.any_pmc,
+      )
+        ? config.kill_targets.any_pmc
+        : KillTargets.ANYPMC,
+      [KillTargets.BEAR]: Object.values<string>(KillTargets).includes(
+        config.kill_targets.bear,
+      )
+        ? config.kill_targets.bear
+        : KillTargets.BEAR,
+      [KillTargets.SAVAGE]: Object.values<string>(KillTargets).includes(
+        config.kill_targets.scavs,
+      )
+        ? config.kill_targets.scavs
+        : KillTargets.SAVAGE,
+      [KillTargets.USEC]: Object.values<string>(KillTargets).includes(
+        config.kill_targets.usec,
+      )
+        ? config.kill_targets.usec
+        : KillTargets.USEC,
+    };
     const multipliers = {
-      [ConditionType.Counter]:
-        CONFIG.task_multipliers.counter > 0
-          ? CONFIG.task_multipliers.counter
-          : this.DEFAULT_TASK_MULTIPLIER,
-      [ConditionType.Find]:
-        CONFIG.task_multipliers.find_handover > 0
-          ? CONFIG.task_multipliers.find_handover
-          : this.DEFAULT_TASK_MULTIPLIER,
-      [ConditionType.Handover]:
-        CONFIG.task_multipliers.find_handover > 0
-          ? CONFIG.task_multipliers.find_handover
-          : this.DEFAULT_TASK_MULTIPLIER,
-      [ConditionType.LeaveAt]:
-        CONFIG.task_multipliers.leave_at > 0
-          ? CONFIG.task_multipliers.leave_at
-          : this.DEFAULT_TASK_MULTIPLIER,
-      [ConditionType.Sell]:
-        CONFIG.task_multipliers.sell > 0
-          ? CONFIG.task_multipliers.sell
-          : this.DEFAULT_TASK_MULTIPLIER,
+      [ConditionType.COUNTER]:
+        config.task_multipliers.counter > 0
+          ? config.task_multipliers.counter
+          : this.defaultTaskMultiplier,
+      [ConditionType.FIND]:
+        config.task_multipliers.find_handover > 0
+          ? config.task_multipliers.find_handover
+          : this.defaultTaskMultiplier,
+      [ConditionType.HANDOVER]:
+        config.task_multipliers.find_handover > 0
+          ? config.task_multipliers.find_handover
+          : this.defaultTaskMultiplier,
+      [ConditionType.LEAVEAT]:
+        config.task_multipliers.leave_at > 0
+          ? config.task_multipliers.leave_at
+          : this.defaultTaskMultiplier,
+      [ConditionType.SELL]:
+        config.task_multipliers.sell > 0
+          ? config.task_multipliers.sell
+          : this.defaultTaskMultiplier,
     };
     const gunsmithKillCount =
-      CONFIG.gunsmith_kills.kills > 0
-        ? CONFIG.gunsmith_kills.kills
-        : this.DEFAULT_GUNSMITH_KILLS;
-    const replaceTask = CONFIG.gunsmith_kills.replace_task ?? false;
-    const questBlacklist = CONFIG.quest_blacklist ?? [];
-    const timer = CONFIG.task_multipliers.timer ?? 0.5;
-    const xpMultiplier = CONFIG.task_multipliers.xp ?? 1.0;
+      config.gunsmith_kills.kills > 0
+        ? config.gunsmith_kills.kills
+        : this.defaultGunsmithKills;
+    const replaceTask = config.gunsmith_kills.replace_task ?? false;
+    const questBlacklist = config.quest_blacklist ?? [];
+    const timer = config.task_multipliers.timer ?? 0.5;
+    const xpMultiplier = config.task_multipliers.xp ?? 1.0;
 
     // Quest condition loop
     log(
@@ -78,6 +115,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
         quest.conditions.AvailableForFinish,
       )) {
         this.adjustQuestCondition(condition, multipliers);
+        this.adjustQuestKillTarget(condition, targets);
         this.adjustQuestPlacementTimer(condition, timer);
       }
 
@@ -87,7 +125,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
     }
 
     // Gunsmith changes
-    if (CONFIG.gunsmith_kills.enabled) {
+    if (config.gunsmith_kills.enabled) {
       log("Adjusting Gunsmith conditions.");
       for (const questId in GSConditionIds) {
         const quest = <IQuest>quests[questId];
@@ -135,6 +173,24 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
       condition.value !== 1
     ) {
       condition.value = Math.ceil(condition.value * multiplier);
+    }
+  }
+
+  private adjustQuestKillTarget(
+    condition: IQuestCondition,
+    targets: { [key in KillTargets]?: string },
+  ): void {
+    if (condition.conditionType === ConditionType.COUNTER) {
+      condition.counter.conditions.forEach((condition) => {
+        if (
+          condition.savageRole !== undefined &&
+          condition.savageRole.length === 0 &&
+          typeof condition.target === "string"
+        ) {
+          const target = targets[condition.target];
+          condition.target = target;
+        }
+      });
     }
   }
 

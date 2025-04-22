@@ -1,4 +1,11 @@
 {
+    "kill_targets": {
+        "any": "Any",
+        "any_pmc": "AnyPmc",
+        "bear": "Bear",
+        "scavs": "Savage",
+        "usec": "Usec"
+    },
     "task_multipliers": {
         "counter": 0.5,
         "find_handover": 0.5,
