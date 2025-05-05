@@ -1,6 +1,6 @@
 {
     "name": "QCAdjustments",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "sptVersion": "~3.11",
     "loadBefore": [],
     "loadAfter": [

@@ -1,3 +1,5 @@
+// @TODO: Refactor enums into their own files, and add functionality for Rogues and Raiders.
+
 import { DependencyContainer } from "tsyringe";
 
 import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
@@ -11,7 +13,6 @@ import config from "../config/config.json";
 import GSConditionIds from "../data/Gunsmith_condition_ids.json";
 import { CreateGunsmithCondition } from "./utils/gunsmithQuestConditionFactory";
 import { RewardType } from "@spt/models/enums/RewardType";
-import { log } from "winston";
 
 enum ConditionType {
   COUNTER = "CounterCreator",
@@ -177,7 +178,7 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
   }
 
   private adjustQuestKillTarget(
-    condition: IQuestCondition,
+    condition: any,
     targets: { [key in KillTargets]?: string },
   ): void {
     if (condition.conditionType === ConditionType.COUNTER) {
@@ -189,6 +190,18 @@ class QuestConditionAdjuster implements IPostDBLoadMod {
         ) {
           const target = targets[condition.target];
           condition.target = target;
+        }
+      });
+    } else if (condition._parent === ConditionType.COUNTER) {
+      // VCQ structure handling
+      const hasProps = (x: any): x is { _props: any } => "_props" in x; // _props check
+      const cond = hasProps(condition) ? condition._props : condition;
+
+      cond.counter.conditions.forEach((condition) => {
+        const cond = hasProps(condition) ? condition._props : condition;
+        if (typeof cond.target === "string") {
+          const target = targets[cond.target];
+          cond.target = target;
         }
       });
     }
