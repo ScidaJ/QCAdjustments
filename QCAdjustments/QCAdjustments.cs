@@ -164,6 +164,12 @@ public class QCAdjustments(
 
     private static void KillTargetAdjustments(QuestCondition quest, Constants.TargetsConfig targets, ISptLogger<QCAdjustments> logger)
     {
+        // Quest type check
+        if (quest.ConditionType != nameof(Constants.ConditionTypes.CounterCreator))
+        {
+            return;
+        }
+
         // Null check
         if (quest.Counter?.Conditions is null)
         {
@@ -172,9 +178,8 @@ public class QCAdjustments(
 
         foreach (var condition in quest.Counter.Conditions)
         {
-            // Matching condition type to enum.
-            if (Enum.TryParse<Constants.Targets>(condition.Target?.ToString(), true, out var killTargets) 
-                && condition.ConditionType == nameof(Constants.ConditionTypes.CounterCreator))
+            // Matching target to enum.
+            if (Enum.TryParse<Constants.Targets>(condition.Target?.Item, true, out var killTargets))
             {
                 // Finding target
                 var t = killTargets switch
@@ -188,7 +193,7 @@ public class QCAdjustments(
                 };
 
                 // Changing Target
-                condition.Target = new ListOrT<string>([t], null);
+                condition.Target = new ListOrT<string>(null, t);
             }
         }
     }
