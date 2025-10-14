@@ -15,7 +15,7 @@ namespace QCAdjustments;
 
 public record ModMetadata : AbstractModMetadata
 {
-    public override string ModGuid { get; init; } = "dev.scida.QCAdjustments";
+    public override string ModGuid { get; init; } = "com.rootsnine.QCAdjustments";
     public override string Name { get; init; } = "QCAdjustments";
     public override string Author { get; init; } = "RootsNine";
     public override List<string>? Contributors { get; init; }
