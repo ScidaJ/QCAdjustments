@@ -1,0 +1,24 @@
+import {DependencyContainer} from "tsyringe";
+
+/**
+ * Handle the registration of classes to be used by the Dependency Injection code
+ */
+export declare class Container {
+    private static registerUtils;
+    private static registerRouters;
+    private static registerGenerators;
+    private static registerHelpers;
+    private static registerLoaders;
+    private static registerCallbacks;
+    private static registerServices;
+    private static registerServers;
+    private static registerControllers;
+
+    static registerPostLoadTypes(container: DependencyContainer, childContainer: DependencyContainer): void;
+
+    static registerTypes(depContainer: DependencyContainer): void;
+
+    static registerPrimaryDependencies(depContainer: DependencyContainer): void;
+
+    static registerListTypes(depContainer: DependencyContainer): void;
+}

@@ -1,0 +1,44 @@
+{
+  "name": "QCAdjustments",
+  "version": "3.0.1",
+  "sptVersion": "~3.11",
+  "loadBefore": [],
+  "loadAfter": [
+    "Virtual's Custom Quest Loader"
+  ],
+  "incompatibilities": [],
+  "isBundleMod": false,
+  "main": "src/mod.js",
+  "scripts": {
+    "setup": "npm i",
+    "build": "node ./build.mjs",
+    "buildinfo": "node ./build.mjs --verbose",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.16.0",
+    "@types/node": "20.11",
+    "@typescript-eslint/eslint-plugin": "7.2",
+    "@typescript-eslint/parser": "7.2",
+    "archiver": "^6.0",
+    "eslint": "8.57",
+    "eslint-config-prettier": "^9.1.0",
+    "fs-extra": "11.2",
+    "globals": "^15.13.0",
+    "husky": "^9.1.7",
+    "ignore": "^5.2",
+    "lint-staged": "^15.2.10",
+    "prettier": "3.4.2",
+    "tsyringe": "4.8.0",
+    "typescript": "5.4",
+    "winston": "3.12"
+  },
+  "author": "RootsNine",
+  "contributors": [],
+  "license": "MIT",
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix",
+    "*.{ts,md}": "prettier --write"
+  }
+}
