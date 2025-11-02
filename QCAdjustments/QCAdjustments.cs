@@ -19,7 +19,7 @@ public record ModMetadata : AbstractModMetadata
     public override string Name { get; init; } = "QCAdjustments";
     public override string Author { get; init; } = "RootsNine";
     public override List<string>? Contributors { get; init; }
-    public override Version Version { get; init; } = new("4.0.0");
+    public override Version Version { get; init; } = new("4.0.1");
     public override Range SptVersion { get; init; } = new("~4.0.0");
 
 
@@ -60,10 +60,10 @@ public class QCAdjustments(
             logger.Info("Beginning Gunsmith adjustments");
         }
 
-        foreach (var questObject in _questsDb)
+        foreach (var q in _questsDb)
         {
-            string questId = questObject.Key.ToString();
-            Quest quest = questObject.Value;
+            var questId = q.Key;
+            var quest = q.Value;
             
             if (_config.QuestBlacklist.Contains(quest.QuestName))
             {
@@ -71,21 +71,25 @@ public class QCAdjustments(
                 continue;
             }
 
-            if (quest.Conditions.AvailableForFinish is not null)
+            if (quest.Conditions.AvailableForFinish is null)
             {
-                foreach (var questCondition in quest.Conditions.AvailableForFinish)
-                {
-                    MultipliersAdjustments(questCondition, _config.Multipliers, logger);
-                    KillTargetAdjustments(questCondition, _config.KillTargets, logger);
-                }
-                if 
-                    (_config.Gunsmith.Enabled)
-                {
-                    if (GunsmithQuestUtils.GunsmithQuests.ContainsKey(questId))
-                    {
-                        GunsmithAdjustments(quest, questId, _config.Gunsmith.ReplaceTask, _config.Gunsmith.Kills, logger);
-                    }
-                }
+                continue;
+            }
+            
+            foreach (var qC in quest.Conditions.AvailableForFinish)
+            {
+                MultipliersAdjustments(qC, _config.Multipliers, logger); 
+                KillTargetAdjustments(qC, _config.KillTargets, logger);
+            }
+            
+            if (_config.Gunsmith.Enabled is not true)
+            {
+                continue;
+            }
+            
+            if (GunsmithQuestUtils.GunsmithQuests.ContainsKey(questId))
+            {
+                GunsmithAdjustments(quest, questId.ToString(), _config.Gunsmith.ReplaceTask, _config.Gunsmith.Kills, logger);
             }
         }
 
@@ -110,18 +114,19 @@ public class QCAdjustments(
 
         var questConditions = new List<QuestCondition>();
         var conditionCounter = 0;
-        foreach (var condition in conditions)
+        foreach (var c in conditions)
         {
             var currCondition = GunsmithQuestUtils.GunsmithQuests[questId][conditionCounter];
             var taskWeapon = new HashSet<string>();
-            
-            if (condition.Target is { List: not null, IsList: true })
+
+            switch (c.Target)
             {
-                taskWeapon.Add(condition.Target.List[0]);
-            }
-            else if (condition.Target is { Item: not null, IsItem: true })
-            {
-                taskWeapon.Add(condition.Target.Item);
+                case { List: not null, IsList: true }:
+                    taskWeapon.Add(c.Target.List[0]);
+                    break;
+                case { Item: not null, IsItem: true }:
+                    taskWeapon.Add(c.Target.Item);
+                    break;
             }
 
             questConditions.Add(new QuestCondition
@@ -176,10 +181,10 @@ public class QCAdjustments(
             return;
         }
 
-        foreach (var condition in quest.Counter.Conditions)
+        foreach (var c in quest.Counter.Conditions)
         {
             // Matching target to enum.
-            if (Enum.TryParse<Constants.Targets>(condition.Target?.Item, true, out var killTargets))
+            if (Enum.TryParse<Constants.Targets>(c.Target?.Item, true, out var killTargets))
             {
                 // Finding target
                 var t = killTargets switch
@@ -193,7 +198,7 @@ public class QCAdjustments(
                 };
 
                 // Changing Target
-                condition.Target = new ListOrT<string>(null, t);
+                c.Target = new ListOrT<string>(null, t);
             }
         }
     }
@@ -205,7 +210,7 @@ public class QCAdjustments(
         if (Enum.TryParse<Constants.ConditionTypes>(condition.ConditionType, true, out var conditionType))
         {
             // Finding multiplier
-            var multiplier = conditionType switch
+            var m = conditionType switch
             {
                 Constants.ConditionTypes.CounterCreator => multipliers.Counter,
                 Constants.ConditionTypes.FindItem => multipliers.FindHandover,
@@ -218,7 +223,7 @@ public class QCAdjustments(
             // Applying multiplier
             if (condition.Value is double d and > 1.0)
             {
-                d *= multiplier;
+                d *= m;
                 condition.Value = Math.Ceiling(d);
             }
         }

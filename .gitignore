@@ -425,3 +425,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 launchSettings.json
+
+# Git artifact
+ssh.exe.stackdump
