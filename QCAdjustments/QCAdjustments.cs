@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
@@ -10,6 +11,7 @@ using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Utils.Json;
 using Range = SemanticVersioning.Range;
 using Version = SemanticVersioning.Version;
+// @TODO Add level requirement adjustment for 'Is This A Reference?' and all quests separately
 
 namespace QCAdjustments;
 
@@ -70,6 +72,8 @@ public class QCAdjustments(
                 logger.Info("Skipping quest adjustment for " + quest.QuestName);
                 continue;
             }
+            
+            // Level adjustment start. Need to look at quest format to find level available for start.
 
             if (quest.Conditions.AvailableForFinish is null)
             {
@@ -206,26 +210,30 @@ public class QCAdjustments(
     private static void MultipliersAdjustments(QuestCondition condition, Constants.MultipliersConfig multipliers,
         ISptLogger<QCAdjustments> logger)
     {
-        // Matching condition type to enum.
-        if (Enum.TryParse<Constants.ConditionTypes>(condition.ConditionType, true, out var conditionType))
+    
+    // Matching condition type to enum.
+        if (!Enum.TryParse<Constants.ConditionTypes>(condition.ConditionType, true, out var conditionType))
         {
-            // Finding multiplier
-            var m = conditionType switch
-            {
-                Constants.ConditionTypes.CounterCreator => multipliers.Counter,
-                Constants.ConditionTypes.FindItem => multipliers.FindHandover,
-                Constants.ConditionTypes.HandoverItem => multipliers.FindHandover,
-                Constants.ConditionTypes.LeaveItemAtLocation => multipliers.LeaveAt,
-                Constants.ConditionTypes.SellItemToTrader => multipliers.Sell,
-                _ => 1.0
-            };
-                
-            // Applying multiplier
-            if (condition.Value is double d and > 1.0)
-            {
-                d *= m;
-                condition.Value = Math.Ceiling(d);
-            }
+            return;
         }
+        
+        // Finding multiplier
+        var m = conditionType switch
+        {
+            Constants.ConditionTypes.CounterCreator => multipliers.Counter,
+            Constants.ConditionTypes.FindItem => multipliers.FindHandover,
+            Constants.ConditionTypes.HandoverItem => multipliers.FindHandover,
+            Constants.ConditionTypes.LeaveItemAtLocation => multipliers.LeaveAt,
+            Constants.ConditionTypes.SellItemToTrader => multipliers.Sell,
+            _ => 1.0
+        };
+            
+        // Applying multiplier
+        if (condition.Value is double d and > 1.0)
+        {
+            d *= m;
+            condition.Value = Math.Ceiling(d);
+        }
+        
     }
 }

@@ -66,6 +66,12 @@ public record Constants
     
         [JsonPropertyName("leave_at")]
         public double LeaveAt { get; set; } = 0.5;
+        
+        [JsonPropertyName("level")]
+        public double Level { get; set; } = 1.0;
+        
+        [JsonPropertyName("reference_level")]
+        public double ReferenceLevel { get; set; } = 1.0;
     
         [JsonPropertyName("sell")]
         public double Sell { get; set; } = 0.5;
