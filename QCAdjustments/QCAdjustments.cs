@@ -1,13 +1,12 @@
 ﻿using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
+using SPTarkov.Common.Models.Logging;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
-using SPTarkov.Server.Core.Helpers;
+using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Spt.Mod;
-using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Servers;
+using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Utils.Json;
 using Range = SemanticVersioning.Range;
 using Version = SemanticVersioning.Version;
@@ -15,33 +14,33 @@ using Version = SemanticVersioning.Version;
 
 namespace QCAdjustments;
 
-public record ModMetadata : AbstractModMetadata
+public record ModMetadata : IModMetadata
 {
-    public override string ModGuid { get; init; } = "com.rootsnine.qcadjustments";
-    public override string Name { get; init; } = "QCAdjustments";
-    public override string Author { get; init; } = "RootsNine";
-    public override List<string>? Contributors { get; init; }
-    public override Version Version { get; init; } = new("4.0.1");
-    public override Range SptVersion { get; init; } = new("~4.0.0");
+    public string ModGuid { get; init; } = "com.rootsnine.qcadjustments";
+    public string Name { get; init; } = "QCAdjustments";
+    public string Author { get; init; } = "RootsNine";
+    public List<string>? Contributors { get; init; }
+    public Version Version { get; init; } = new("4.1.0");
+    public Range SptVersion { get; init; } = new("~4.1.0");
 
 
-    public override List<string>? Incompatibilities { get; init; }
-    public override Dictionary<string, Range>? ModDependencies { get; init; }
-    public override string? Url { get; init; }
-    public override bool? IsBundleMod { get; init; }
-    public override string License { get; init; } = "MIT";
+    public List<string>? Incompatibilities { get; init; }
+    public Dictionary<string, Range>? ModDependencies { get; init; }
+    public string? Url { get; init; }
+    public bool HasPrepatcher { get; init; }
+    public string License { get; init; } = "MIT";
 }
 
-[Injectable(TypePriority = OnLoadOrder.PostSptModLoader + 1)]
+[Injectable(TypePriority = OnLoadOrder.PostLoad+ 1)]
 public class QCAdjustments(
-    DatabaseServer databaseServer,
+    TemplateTable templateTable,
     ISptLogger<QCAdjustments> logger,
     ModHelper modHelper) : IOnLoad
 {
     private Constants.Config? _config;
     private Dictionary<MongoId, Quest>? _questsDb;
 
-    public Task OnLoad()
+    public Task OnLoadAsync(CancellationToken cancellationToken)
     {
         var pathToMod = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         try
@@ -54,7 +53,7 @@ public class QCAdjustments(
             return Task.CompletedTask;
         }
 
-        _questsDb = databaseServer.GetTables().Templates.Quests;
+        _questsDb = templateTable.Quests;
 
         logger.Info("Beginning quest adjustments");
         if (_config.Gunsmith.Enabled)

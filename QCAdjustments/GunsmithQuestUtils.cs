@@ -1,4 +1,5 @@
 ﻿using SPTarkov.Server.Core.Models.Common;
+using SPTarkov.Server.Core.Models.Enums;
 
 namespace QCAdjustments;
 
@@ -24,7 +25,7 @@ public record GunsmithQuestUtils
     public static readonly Dictionary<MongoId, List<QuestReference>> GunsmithQuests = new()
     {
         [QuestTpl.GUNSMITH_PART_1] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda814bb8b0f1e436d52"),
@@ -36,9 +37,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_2] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda8ee8909ad6d03cc19"),
@@ -51,9 +52,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_3] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda8a09bb652ac3b3ec1"),
@@ -66,9 +67,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_16] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda8ba3c68e59dc27c3e"),
@@ -81,9 +82,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_13] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda828869673473c457c"),
@@ -96,9 +97,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_7] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda8621c9952477ea762"),
@@ -111,9 +112,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_5] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda834f997088d34a854"),
@@ -126,9 +127,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_6] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674edda8bf84e021f94b8294"),
@@ -141,9 +142,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_8] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb3e91e188c7bae652a"),
@@ -156,9 +157,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_10] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb3d121170265945033"),
@@ -171,9 +172,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_15] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb31a49f1417d4df589"),
@@ -186,9 +187,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_17] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb3f97fe8f63b1f0f24"),
@@ -201,9 +202,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_12] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb38b387995daf4855d"),
@@ -216,9 +217,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_18] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb3013712612a9cdb32"),
@@ -231,9 +232,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_20] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb3cf57009996305583"),
@@ -246,9 +247,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_22] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eebb30f35249a89b96da2"),
@@ -261,9 +262,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_4] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eed6cd6aad7371ad660eb"),
@@ -276,9 +277,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_9] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eed6c79fe953320837f01"),
@@ -291,9 +292,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_11] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eed6c1db9059a22fb936d"),
@@ -306,9 +307,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_14] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eed6cfaa234e1ae8c2088"),
@@ -321,9 +322,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_19] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eed6caddee2696a6bde01"),
@@ -336,9 +337,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_21] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eed6cd3e8b1235145ca2d"),
@@ -363,9 +364,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_23] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eed6cf2e9e899610f3a4b"),
@@ -378,9 +379,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_24] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eeef58cebccbb9c6fe341"),
@@ -393,9 +394,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_PART_25] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eeef5a27dc7a83712e432"),
@@ -408,9 +409,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_SPECIAL_ORDER] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("674eeef57518cfe511ff6cfe"),
@@ -423,9 +424,9 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        },
+        ],
         [QuestTpl.GUNSMITH_OLD_FRIENDS_REQUEST] =
-        {
+        [
             new QuestReference
             {
                 Id = new MongoId("67e3fe48cdc07470b520d2da"),
@@ -462,6 +463,6 @@ public record GunsmithQuestUtils
                     ]
                 }
             }
-        }
+        ]
     };
 }
