@@ -5,6 +5,7 @@ using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Utils.Json;
@@ -28,7 +29,7 @@ public record ModMetadata : IModMetadata
     public Dictionary<string, Range>? ModDependencies { get; init; }
     public string? Url { get; init; }
     public bool HasPrepatcher { get; init; }
-    public string License { get; init; } = "MIT";
+    public string License { get; init; } = "Creative Commons BY-NC-SA 4.0";
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostLoad+ 1)]
@@ -73,6 +74,20 @@ public class QCAdjustments(
             }
             
             // Level adjustment start. Need to look at quest format to find level available for start.
+            // if (quest.Conditions.AvailableForStart is null)
+            // {
+            //     continue;
+            // }
+            //
+            // foreach (var condition in quest.Conditions.AvailableForStart)
+            // {
+            //     if (condition.ConditionType == "Level")
+            //     {
+            //         var l = condition.Value ?? 1;
+            //         l *= _config.Multipliers.Level;
+            //         condition.Value = Math.Ceiling(l);
+            //     }
+            // }
 
             if (quest.Conditions.AvailableForFinish is null)
             {
@@ -84,7 +99,25 @@ public class QCAdjustments(
                 MultipliersAdjustments(qC, _config.Multipliers, logger); 
                 KillTargetAdjustments(qC, _config.KillTargets, logger);
             }
-            
+
+            if (quest.Rewards != null)
+            {
+                foreach (var rC in quest.Rewards)
+                {
+                    foreach (var r in rC.Value)
+                    {
+                        if (r.Type != RewardType.Experience)
+                        {
+                            continue;
+                        }
+
+                        var e = r.Value ?? 1;
+                        e *= _config.Multipliers.Xp;
+                        r.Value = Math.Ceiling(e);
+                    }
+                }
+            }
+
             if (_config.Gunsmith.Enabled is not true)
             {
                 continue;
@@ -209,8 +242,7 @@ public class QCAdjustments(
     private static void MultipliersAdjustments(QuestCondition condition, Constants.MultipliersConfig multipliers,
         ISptLogger<QCAdjustments> logger)
     {
-    
-    // Matching condition type to enum.
+        // Matching condition type to enum.
         if (!Enum.TryParse<Constants.ConditionTypes>(condition.ConditionType, true, out var conditionType))
         {
             return;
@@ -226,6 +258,13 @@ public class QCAdjustments(
             Constants.ConditionTypes.SellItemToTrader => multipliers.Sell,
             _ => 1.0
         };
+
+        // Applying timer adjustment. -.-
+        if (condition.PlantTime is not null and double t)
+        {
+            t *= multipliers.Timer;
+            condition.PlantTime = Math.Round(t);
+        }
             
         // Applying multiplier
         if (condition.Value is double d and > 1.0)
