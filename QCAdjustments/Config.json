@@ -10,6 +10,7 @@
     "counter": 0.5,
     "find_handover": 0.5,
     "leave_at": 0.5,
+    "level": 1.0,
     "sell": 0.5,
     "timer": 0.5,
     "xp": 1.0
@@ -19,5 +20,6 @@
     "replace_tasks": false,
     "kills": 10
   },
+  "itar_loyalty": 1,
   "quest_blacklist": []
 }

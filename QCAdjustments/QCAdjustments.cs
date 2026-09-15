@@ -6,31 +6,10 @@ using SPTarkov.Server.Core.Helpers.Server;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
-using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Models.Spt.Tables;
 using SPTarkov.Server.Core.Utils.Json;
-using Range = SemanticVersioning.Range;
-using Version = SemanticVersioning.Version;
-// @TODO Add level requirement adjustment for 'Is This A Reference?' and all quests separately
 
 namespace QCAdjustments;
-
-public record ModMetadata : IModMetadata
-{
-    public string ModGuid { get; init; } = "com.rootsnine.qcadjustments";
-    public string Name { get; init; } = "QCAdjustments";
-    public string Author { get; init; } = "RootsNine";
-    public List<string>? Contributors { get; init; }
-    public Version Version { get; init; } = new("4.1.0");
-    public Range SptVersion { get; init; } = new("~4.1.0");
-
-
-    public List<string>? Incompatibilities { get; init; }
-    public Dictionary<string, Range>? ModDependencies { get; init; }
-    public string? Url { get; init; }
-    public bool HasPrepatcher { get; init; }
-    public string License { get; init; } = "Creative Commons BY-NC-SA 4.0";
-}
 
 [Injectable(TypePriority = OnLoadOrder.PostLoad+ 1)]
 public class QCAdjustments(
@@ -74,24 +53,20 @@ public class QCAdjustments(
             }
             
             // Level adjustment start. Need to look at quest format to find level available for start.
-            // if (quest.Conditions.AvailableForStart is null)
-            // {
-            //     continue;
-            // }
-            //
-            // foreach (var condition in quest.Conditions.AvailableForStart)
-            // {
-            //     if (condition.ConditionType == "Level")
-            //     {
-            //         var l = condition.Value ?? 1;
-            //         l *= _config.Multipliers.Level;
-            //         condition.Value = Math.Ceiling(l);
-            //     }
-            // }
+            if (quest.Conditions.AvailableForStart is null)
+            {
+                goto Finish;
+            }
+            
+            foreach (var c in quest.Conditions.AvailableForStart)
+            {
+                StartAdjustments(c, quest.Id, _config, logger);
+            }
 
+            Finish:
             if (quest.Conditions.AvailableForFinish is null)
             {
-                continue;
+                goto Gunsmith;
             }
             
             foreach (var qC in quest.Conditions.AvailableForFinish)
@@ -118,6 +93,7 @@ public class QCAdjustments(
                 }
             }
 
+            Gunsmith:
             if (_config.Gunsmith.Enabled is not true)
             {
                 continue;
@@ -233,7 +209,7 @@ public class QCAdjustments(
                     _ => "Any"
                 };
 
-                // Changing Target
+                // Changing target
                 c.Target = new ListOrT<string>(null, t);
             }
         }
@@ -273,5 +249,26 @@ public class QCAdjustments(
             condition.Value = Math.Ceiling(d);
         }
         
+    }
+
+    private static void StartAdjustments(QuestCondition condition, MongoId questId, Constants.Config config, ISptLogger<QCAdjustments> logger)
+    {
+        // Level adjustment. Value is multiplied so 0 check is needed.
+        if (condition.ConditionType != "Level" || config.Multipliers.Level <= 0)
+        {
+            goto Itar;
+        }
+        var l = condition.Value ?? 1;
+        l *= config.Multipliers.Level;
+        condition.Value = Math.Ceiling(l);
+
+        Itar:
+        // Is This A Reference trader loyalty change
+        if (questId != QuestTpl.IS_THIS_A_REFERENCE || condition.ConditionType != "TraderStanding" || config.ItarLoyalty < 0)
+        {
+            return;
+        }
+        condition.Value = config.ItarLoyalty;
+        logger.Info("Set ITAR Loyalty");
     }
 }

@@ -33,6 +33,9 @@ public record Constants
     
         [JsonPropertyName("gunsmith")]
         public required GunsmithConfig Gunsmith { get; set; }
+        
+        [JsonPropertyName("itar_loyalty")]
+        public int ItarLoyalty { get; set; } = 1;
 
         [JsonPropertyName("quest_blacklist")]
         public IReadOnlyList<string> QuestBlacklist { get; set; } = new List<string>();
@@ -69,9 +72,6 @@ public record Constants
         
         [JsonPropertyName("level")]
         public double Level { get; set; } = 1.0;
-        
-        [JsonPropertyName("reference_level")]
-        public double ReferenceLevel { get; set; } = 1.0;
     
         [JsonPropertyName("sell")]
         public double Sell { get; set; } = 0.5;
