@@ -10,6 +10,7 @@ public record Constants
         FindItem,
         HandoverItem,
         LeaveItemAtLocation,
+        PlaceBeacon,
         SellItemToTrader
     }
     
