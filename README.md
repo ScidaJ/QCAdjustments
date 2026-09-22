@@ -42,7 +42,7 @@ This section has to do with the Gunsmith quests, adjusting them to also require 
 
 ### Itar(Is This A Reference?) Loyalty
 
-Default: 1 -  This entry will set the Fence loyalty requirement for the "Is This A Reference" quest, whole numbers only.
+`itar_loyalty` Default: 1 -  This entry will set the Fence loyalty requirement for the "Is This A Reference" quest, whole numbers only.
 
 ### Quest Blacklist(Optional)
 
