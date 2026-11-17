@@ -11,7 +11,7 @@ using SPTarkov.Server.Core.Utils.Json;
 
 namespace QCAdjustments;
 
-[Injectable(TypePriority = OnLoadOrder.PostLoad+ 1)]
+[Injectable(TypePriority = OnLoadOrder.PostLoad + 1000)] // Load order change from + 1 to + 1000 to deal with good ol' RACE CONDITIONS
 public class QCAdjustments(
     TemplateTable templateTable,
     ISptLogger<QCAdjustments> logger,
