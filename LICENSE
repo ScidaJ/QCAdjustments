@@ -1,8 +1,18 @@
 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 
-Author: Refringe
-Project: Single Player Tarkov
-URL: https://github.com/sp-tarkov/server-csharp
+Original Author: Refringe
+Original Project: Single Player Tarkov
+Original URL: https://github.com/sp-tarkov/server-csharp
+
+Mod Author: Jacobi Scida
+Mod Project: QCAdjustments
+Mod URL: https://github.com/ScidaJ/QCAdjustments
+
+This project was created using the Single Player Tarkov mod examples repository as its starting point.
+
+The original repository and its associated materials are licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
+
+This project contains original contributions by Jacobi Scida, built upon the original example repository. The original author's attribution and licensing terms are retained for the materials derived from that repository.
 
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
